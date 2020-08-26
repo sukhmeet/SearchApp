@@ -28,7 +28,7 @@ public class SearchProviderFactory {
     }
 
     public SearchProvider getSearchProvider(String searchMethod) {
-    	// TODO throw exception
+    	// TODO - throw exception
         return searchProvider.get(searchMethod);
     }
 	

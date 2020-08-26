@@ -17,6 +17,7 @@ import javax.annotation.PreDestroy;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import tgt.service.search.SearchResult;
@@ -24,8 +25,9 @@ import tgt.service.search.SearchResult;
 
 
 @Component
+@Primary
 public class SimpleSearchProvider extends AbstractSearchProvider {
-	private static ExecutorService pool;
+	protected static ExecutorService pool;
 		
 	@Value("${thread.pool.size}")
 	private int poolsize;
@@ -41,13 +43,13 @@ public class SimpleSearchProvider extends AbstractSearchProvider {
 	@Autowired
 	Comparator<SearchResult> searchResultComparator;
 	
-	public List<SimpleSearchWorker> getWorkers(String term) {
-		List<SimpleSearchWorker> workers = new LinkedList<>();
+	public List<SearchWorker> getWorkers(String searchPhrase) {
+		List<SearchWorker> workers = new LinkedList<>();
 		for(File file: getDataFiles()) {
 			SimpleSearchWorker worker;
 			try {
-				worker = new SimpleSearchWorker(file.getName(), new FileReader(file), term);
-				System.out.println("DBP created worker for :" + file.getName());
+				worker = new SimpleSearchWorker(file.getName(), new FileReader(file), searchPhrase);
+				//System.out.println("DBP created worker for :" + file.getName());
 				workers.add(worker);
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -60,10 +62,12 @@ public class SimpleSearchProvider extends AbstractSearchProvider {
 	
 	@Override
 	public List<SearchResult> search(String searchPhrase){
-		//System.out.println("DBP SimpleSearchProvider.search called for phrase :" + term + "  no of dataFiles " + dataFiles.size());
+		
+		//System.out.println("DBP SimpleSearchProvider.search called for phrase :" + searchPhrase + "  no of dataFiles " + dataFiles.size());
+		
 		List<Future<SearchResult>> futures = new LinkedList<>();
 		
-		for(SimpleSearchWorker worker: getWorkers(searchPhrase)){
+		for(SearchWorker worker: getWorkers(searchPhrase)){
 			
 			Future<SearchResult> future = pool.submit(worker);
 			futures.add(future);
@@ -75,13 +79,15 @@ public class SimpleSearchProvider extends AbstractSearchProvider {
 			try {
 				SearchResult searchResult = null;
 				searchResult = future.get();
+				
 				//System.out.println("DBP searchResult :" + searchResult.getFileName() + " : " + searchResult.getNumOccurence());
+				
 				if(searchResult.getNumOccurence() > 0){
 					results.add(searchResult);
 				}
 				
 			} catch (Exception e) {
-			
+				System.out.println(e.toString());
 			}
 		}
 		
@@ -103,9 +109,4 @@ public class SimpleSearchProvider extends AbstractSearchProvider {
 		pool.shutdown();
 	}
 	
-	
-	
-	
-	
-
 }

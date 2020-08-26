@@ -14,7 +14,6 @@ import tgt.service.search.SearchResult;
 public class AppConfig {
 	
 	@Bean
-	@Scope("singleton")
 	public Comparator<SearchResult> getSearchResultComparator() {
 		Comparator<SearchResult> searchResultcomparator = new Comparator<SearchResult>() {
 			@Override

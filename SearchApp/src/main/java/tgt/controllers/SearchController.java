@@ -24,9 +24,12 @@ public class SearchController {
 		List<SearchResult> results = searchService.search(searchMethod, searchPhrase);
 		
 		// For Debug only
-		for(SearchResult searchResult : results) {
-			System.out.println("Search result :" + searchResult.getFileName() + " " + searchResult.getNumOccurence());
-		}
+		/*if ( results != null) {
+			for(SearchResult searchResult : results) {
+				System.out.println("Search result : " + searchResult.getFileName() + " " + searchResult.getNumOccurence());
+			}
+		}*/
+		System.out.println(searchMethod + " : " +searchPhrase + ".");
 		
 		return results;
 		

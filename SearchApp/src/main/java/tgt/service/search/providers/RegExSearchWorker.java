@@ -1,43 +1,46 @@
 package tgt.service.search.providers;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.Reader;
-import java.util.concurrent.Callable;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import tgt.service.search.SearchResult;
 
-public class SimpleSearchWorker extends SearchWorker {
+public class RegExSearchWorker extends SimpleSearchWorker {
 
-
-	
-	public SimpleSearchWorker(String fileName, Reader fileReader, String searchPhrase) {
-		
+	public RegExSearchWorker(String fileName, Reader fileReader, String searchPhrase) {
 		super(fileName, fileReader, searchPhrase);
-		
+	
 	}
-
+		
 	@Override
 	public SearchResult call() throws Exception {
 		
-		//System.out.println(" SimpleSearchWorker.called for " + fileName);
+		//System.out.println(" RegExSearchWorker.called for " + fileName);
 		
 		BufferedReader reader = null;
 		if ( searchPhrase == null || searchPhrase.equals("")) {
 			return new SearchResult(fileName, 0);
 		}
 		int count = 0;
+		Pattern r = Pattern.compile(searchPhrase);
 		
 		try{
 			reader = new BufferedReader(fileReader);
 			String line = null;
 			while( (line=reader.readLine())!=null){
 				
-					
-				int index = -1;
-				do {
-					index = line.indexOf(searchPhrase, index+1);
-					if (index != -1) count++;
-				} while(index != -1);
+				
+				Matcher m = r.matcher(line);
+				while (m.find()) {
+				    count++;
+				}
 				
 			}
 			
@@ -54,4 +57,5 @@ public class SimpleSearchWorker extends SearchWorker {
 		
 		return new SearchResult(fileName, count);
 	}
+
 }

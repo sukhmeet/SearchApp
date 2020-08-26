@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 public abstract class AbstractSearchProvider implements SearchProvider {
 	protected List<File> dataFiles = new LinkedList<>();
 	@Value("${app.search.docdir}")
-	private String dataDir;
+	protected String dataDir;
 
 	public String getDataDir() {
 		return dataDir;
@@ -34,7 +34,7 @@ public abstract class AbstractSearchProvider implements SearchProvider {
 					String fileName = file.getName();
 					if( fileName.lastIndexOf(".") > 0 && fileName.substring(fileName.lastIndexOf(".")+1).equals("txt") ) {
 						dataFiles.add(file);
-						System.out.println("DBP loadFileList added file:" +  file.getName());
+						//System.out.println("DBP loadFileList added file:" +  file.getName());
 					}
 				}
 			}
